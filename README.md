@@ -8,7 +8,7 @@ Simple script to parse your package.json and upgrade each package version to lat
 
 Add:
 ```json
-"upgrade-node-modules": "git@github.com:unimaginativeGitHub/upgrade-node-modules.git#v1.0.0"
+"upgrade-node-modules": "git+ssh://git@github.com:unimaginativeGitHub/upgrade-node-modules.git#v1.0.0"
 ```
 To your devDependencies, then run:
 ```bash
