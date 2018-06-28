@@ -1,0 +1,6 @@
+#modules
+package.json.new
+node_modules
+
+#apple bookkeeping
+*.DS_Store

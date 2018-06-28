@@ -1,0 +1,40 @@
+{
+  "author": "Bradley D. Cooper",
+  "bin": {
+    "upgrade-node-modules": "./index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/unimaginativeGitHub/upgrade-node-modules/issues"
+  },
+  "dependencies": {
+    "chalk": "2.4.1",
+    "commander": "2.15.1",
+    "json-colorizer": "1.1.1",
+    "json-stable-stringify": "1.0.1"
+  },
+  "description": "Lock down you module versions and upgrade to the latest stable versions when you want to",
+  "devDependencies": {
+    "eslint": "5.0.1",
+    "eslint-config-airbnb": "17.0.0",
+    "eslint-plugin-import": "2.13.0",
+    "eslint-plugin-jsx-a11y": "6.0.3",
+    "eslint-plugin-react": "7.10.0"
+  },
+  "homepage": "https://github.com/unimaginativeGitHub/upgrade-node-modules#readme",
+  "keywords": [
+    "upgrade",
+    "update"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "upgrade-node-modules",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unimaginativeGitHub/upgrade-node-modules.git"
+  },
+  "scripts": {
+    "lint": "./node_modules/eslint/bin/eslint.js .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.9.0"
+}
