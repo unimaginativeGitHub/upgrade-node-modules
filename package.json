@@ -1,7 +1,7 @@
 {
   "author": "Bradley D. Cooper",
   "bin": {
-    "upgrade-node-modules": "./index.js"
+    "upgrade-node-modules": "./bin/upgrade-node-modules.js"
   },
   "bugs": {
     "url": "https://github.com/unimaginativeGitHub/upgrade-node-modules/issues"
@@ -34,7 +34,7 @@
   },
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./bin/upgrade-node-modules.js -t"
   },
-  "version": "0.9.0"
+  "version": "1.0.0"
 }
