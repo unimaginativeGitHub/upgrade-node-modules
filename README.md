@@ -7,7 +7,7 @@ Simple script to parse your package.json and upgrade each package version to lat
 **Directly**
 
 Add:
-```javascript
+```json
 "upgrade-node-modules": "git@github.com:unimaginativeGitHub/upgrade-node-modules.git#v1.0.0"
 ```
 To your devDependencies, then run:
@@ -29,7 +29,7 @@ Invoke the upgrade script directly from your project's node_modules directory:
 ```
 
 Optionally - add this script to your package.json:
-```javascript
+```json
   "scripts": {
     "upgrade-node-modules": "./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js",
   },
@@ -51,7 +51,7 @@ By default, the script will walk your package.json and query npm for the latest 
 The `upgrade-node-modules` script has the option of locking down any number of **dependencies** or **devDependencies**. All you need to do is add a file to your project's root directory name `fixedModules.json`. List dependencies and devDependencies in the same way you would in `package.json`
 
 **Example:**
-```javascript
+```json
 {
   "dependencies": {
     "commander": "2.14.0",
@@ -86,11 +86,11 @@ or
 ### Silent
 Suppress all console output.
 ```
-npm run upgrade-node-modules -- -v
+npm run upgrade-node-modules -- -s
 ```
 or
 ```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -v
+./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -s
 ```
 
 ### Overwrite
@@ -106,9 +106,9 @@ or
 ### Test
 Test uses `upgrade-node-modules`'s own package.json as a test. Look for changes in the `node_modules/upgrade-node-modules` dir.
 ```
-npm run upgrade-node-modules -- -w
+npm run upgrade-node-modules -- -t
 ```
 or
 ```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -w
+./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -t
 ```
