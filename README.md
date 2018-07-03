@@ -3,41 +3,16 @@ Simple script to parse your package.json and upgrade each package version to lat
 
 ---
 
-## Include it in your project
-**Directly**
-
-Add:
-```json
-"upgrade-node-modules": "git+ssh://git@github.com:unimaginativeGitHub/upgrade-node-modules.git#v1.0.0"
-```
-To your devDependencies, then run:
-```bash
-npm install
-```
+## Install globally
 
 **Via npm**
 ```bash
-npm install --save upgrade-node-modules
+npm install --global upgrade-node-modules
 ```
 
----
-
-## Usage
-Invoke the upgrade script directly from your project's node_modules directory:
-```bash
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js
+Then cd into the root level of any node project and run:
 ```
-
-Optionally - add this script to your package.json:
-```json
-  "scripts": {
-    "upgrade-node-modules": "./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js",
-  },
-```
-
-Then you can run:
-```
-npm run upgrade-node-modules
+upgrade-node-modules
 ```
 
 By default, the script will walk your package.json and query npm for the latest stable versions of each package. Once found, the script will create a new clone of your package.json with the latest stable versions of each devDependency and dependency. The file is saved as new file `package.json.new`.
@@ -66,49 +41,23 @@ The `upgrade-node-modules` script has the option of locking down any number of *
 ### Help
 Display help.
 ```
-npm run upgrade-node-modules -- -h
-```
-or
-```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -h
+upgrade-node-modules -h
 ```
 
 ### Verbose
 Display all console output.
 ```
-npm run upgrade-node-modules -- -v
-```
-or
-```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -v
+upgrade-node-modules -v
 ```
 
 ### Silent
 Suppress all console output.
 ```
-npm run upgrade-node-modules -- -s
-```
-or
-```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -s
+upgrade-node-modules -s
 ```
 
 ### Overwrite
 Overwrite your existing `package.json` with the new module versions (instead of creating a `package.json.new`).
 ```
-npm run upgrade-node-modules -- -w
-```
-or
-```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -w
-```
-
-### Test
-Test uses `upgrade-node-modules`'s own package.json as a test. Look for changes in the `node_modules/upgrade-node-modules` dir.
-```
-npm run upgrade-node-modules -- -t
-```
-or
-```
-./node_modules/upgrade-node-modules/bin/upgrade-node-modules.js -t
+upgrade-node-modules -w
 ```

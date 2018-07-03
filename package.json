@@ -1,7 +1,7 @@
 {
   "author": "Bradley D. Cooper",
   "bin": {
-    "upgrade-node-modules": "./bin/upgrade-node-modules.js"
+    "upgrade-node-modules": "./index.js"
   },
   "bugs": {
     "url": "https://github.com/unimaginativeGitHub/upgrade-node-modules/issues"
@@ -33,8 +33,7 @@
     "url": "git+https://github.com/unimaginativeGitHub/upgrade-node-modules.git"
   },
   "scripts": {
-    "lint": "./node_modules/eslint/bin/eslint.js .",
-    "test": "./bin/upgrade-node-modules.js -t"
+    "lint": "./node_modules/.bin/eslint ."
   },
   "version": "1.0.0"
 }

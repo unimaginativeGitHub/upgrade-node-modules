@@ -4,9 +4,9 @@ const program = require('commander');
 const path = require('path');
 const fs = require('fs');
 
-const { logger } = require('../src/js/simpleLogger');
-const { asyncExec } = require('../src/js/exec');
-const { version } = require('../package.json');
+const { logger } = require('./src/js/simpleLogger');
+const { asyncExec } = require('./src/js/exec');
+const { version } = require('./package.json');
 
 // Parse options and provide helper text
 program
@@ -14,20 +14,13 @@ program
   .option('-v, --verbose', 'Show debug output')
   .option('-w, --overwrite', 'Overwrite the existing package.json rather then creating a pacakge.json.new file')
   .option('-s, --silent', 'Silence all logging')
-  .option('-t, --test', 'Test script run on the upgrade-node-modules package.json')
   .parse(process.argv);
 
-const {
-  verbose,
-  overwrite,
-  silent,
-  test,
-} = program;
+const { verbose, overwrite, silent } = program;
 
 if (verbose && !silent) {
   logger.debug(`Settings
-       • verbose:  ${verbose ? '  yes' : '  nope'}
-       • test:  ${test ? '     yes' : '     nope'}
+       • verbose:    ${verbose ? 'yes' : 'nope'}
        • overwrite:  ${overwrite ? 'yes' : 'nope'}
   `);
 }
@@ -37,7 +30,7 @@ if (verbose && !silent) {
  *  companion fixedModules.json file
  */
 
-const parentDir = test ? path.join(__dirname, '../') : path.join(__dirname, '../../../');
+const parentDir = process.cwd(); // gets the directory where command was executed
 let fixedModules = { dependencies: {}, devDependencies: {} };
 
 /* eslint-disable import/no-dynamic-require, global-require */
