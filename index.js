@@ -3,6 +3,7 @@ const stableStringify = require('json-stable-stringify');
 const program = require('commander');
 const path = require('path');
 const fs = require('fs');
+const Table = require('easy-table');
 
 const { logger } = require('./src/js/simpleLogger');
 const { asyncExec } = require('./src/js/exec');
@@ -14,9 +15,12 @@ program
   .option('-v, --verbose', 'Show debug output')
   .option('-w, --overwrite', 'Overwrite the existing package.json rather then creating a pacakge.json.new file')
   .option('-s, --silent', 'Silence all logging')
+  .option('-r --report', 'Provide a log of which modules were updated')
   .parse(process.argv);
 
-const { verbose, overwrite, silent } = program;
+const {
+  verbose, overwrite, silent, report,
+} = program;
 
 if (verbose && !silent) {
   logger.debug(`Settings
@@ -71,6 +75,23 @@ const getLatest = async (dependencies) => {
   return newDependencies;
 };
 
+const reportData = (type, latest) => {
+  const data = [];
+  Object.keys(currentPackage[type]).forEach((dep) => {
+    const currentDependency = currentPackage[type][dep];
+    const latestDependency = latest[dep];
+    if (currentDependency !== latestDependency) {
+      data.push({
+        package: dep,
+        current: currentDependency,
+        latest: latestDependency,
+        type,
+      });
+    }
+  });
+  return data;
+};
+
 const upgradePackage = async () => {
   if (!silent) {
     logger.info('Retrieving Dev Dependencies...');
@@ -97,11 +118,33 @@ const upgradePackage = async () => {
     dependencies,
   }, { space: 2 });
 
+
   fs.writeFile(newPackagePath, newPackage, (err) => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to ${newPackagePath}`, err);
     } else if (!silent) {
       logger.info(`New ${fileName} saved to ${newPackagePath}\n`);
+
+      if (report) {
+        logger.info('You want to see the report, thank you.');
+
+        const depSummary = reportData('dependencies', dependencies);
+        const devDepSummary = reportData('devDependencies', devDependencies);
+
+        const data = [].concat(depSummary, devDepSummary);
+        const t = new Table();
+
+        data.forEach((pkg) => {
+          t.cell('Package', pkg.package);
+          t.cell('Current', pkg.current);
+          t.cell('Latest', pkg.latest);
+          t.cell('Type', pkg.type);
+          t.newRow();
+        });
+
+        logger.info(`current ${Object.keys(currentPackage.dependencies)}`);
+        logger.info(`\n${t.toString()}`);
+      }
     }
   });
 };
@@ -111,3 +154,10 @@ try {
 } catch (err) {
   logger.error('There was a problem upgrading your node modules:', err);
 }
+
+
+/*
+const data = [
+ { package: name, current: version, latest: version, type: dependencies },
+];
+*/

@@ -9,6 +9,7 @@
   "dependencies": {
     "chalk": "2.4.1",
     "commander": "2.15.1",
+    "easy-table": "1.1.1",
     "json-colorizer": "1.1.1",
     "json-stable-stringify": "1.0.1"
   },
@@ -35,5 +36,5 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint ."
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
