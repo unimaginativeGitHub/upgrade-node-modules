@@ -8,17 +8,18 @@
   },
   "dependencies": {
     "chalk": "2.4.1",
-    "commander": "2.15.1",
+    "commander": "2.16.0",
     "easy-table": "1.1.1",
     "json-colorizer": "1.1.1",
-    "json-stable-stringify": "1.0.1"
+    "json-stable-stringify": "1.0.1",
+    "node-strings": "1.0.2"
   },
   "description": "Lock down you module versions and upgrade to the latest stable versions when you want to",
   "devDependencies": {
-    "eslint": "5.0.1",
+    "eslint": "5.1.0",
     "eslint-config-airbnb": "17.0.0",
     "eslint-plugin-import": "2.13.0",
-    "eslint-plugin-jsx-a11y": "6.0.3",
+    "eslint-plugin-jsx-a11y": "6.1.0",
     "eslint-plugin-react": "7.10.0"
   },
   "homepage": "https://github.com/unimaginativeGitHub/upgrade-node-modules#readme",

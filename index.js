@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 const stableStringify = require('json-stable-stringify');
+const strings = require('node-strings');
 const program = require('commander');
+const Table = require('easy-table');
 const path = require('path');
 const fs = require('fs');
-const Table = require('easy-table');
+const {
+  green, yellow, red, magenta,
+} = require('chalk');
 
 const { logger } = require('./src/js/simpleLogger');
 const { asyncExec } = require('./src/js/exec');
@@ -26,6 +30,7 @@ if (verbose && !silent) {
   logger.debug(`Settings
        • verbose:    ${verbose ? 'yes' : 'nope'}
        • overwrite:  ${overwrite ? 'yes' : 'nope'}
+       • report:     ${report ? 'yes' : 'nope'}
   `);
 }
 
@@ -75,15 +80,17 @@ const getLatest = async (dependencies) => {
   return newDependencies;
 };
 
-const reportData = (type, latest) => {
+const generateReportData = (type, desired, latest) => {
   const data = [];
   Object.keys(currentPackage[type]).forEach((dep) => {
     const currentDependency = currentPackage[type][dep];
+    const desiredDependency = desired[dep];
     const latestDependency = latest[dep];
     if (currentDependency !== latestDependency) {
       data.push({
-        package: dep,
+        module: dep,
         current: currentDependency,
+        wanted: desiredDependency,
         latest: latestDependency,
         type,
       });
@@ -92,22 +99,44 @@ const reportData = (type, latest) => {
   return data;
 };
 
+const printReport = (dependencies, devDependencies, latestDeps, latestDevDeps) => {
+  const depSummary = generateReportData('dependencies', dependencies, latestDeps);
+  const devDepSummary = generateReportData('devDependencies', devDependencies, latestDevDeps);
+
+  const summary = [...depSummary, ...devDepSummary];
+  const t = new Table();
+  summary.forEach((pkg) => {
+    const fixed = pkg.wanted !== pkg.latest;
+    t.cell('Package', fixed ? yellow(pkg.module) : red(pkg.module));
+    t.cell('Current', fixed ? yellow(pkg.current) : pkg.current);
+    t.cell('Wanted', fixed ? yellow(pkg.wanted) : green(pkg.wanted));
+    t.cell('Latest', magenta(pkg.latest));
+    t.cell('Type', fixed ? yellow(pkg.type) : pkg.type);
+    t.newRow();
+  });
+
+  const date = new Date();
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const dateString = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`.underline();
+  logger.info(`\n\n${dateString}\n${summary.length ? t : '- no new dependencies -\n'}`);
+};
+
 const upgradePackage = async () => {
   if (!silent) {
-    logger.info('Retrieving Dev Dependencies...');
+    logger.info('Retrieving Primary and Dev Dependencies...');
   }
-  const devDependencies = {
-    ...(await getLatest(currentPackage.devDependencies)),
-    ...fixedModules.devDependencies,
-  };
 
-  if (!silent) {
-    logger.info('Retrieving Primary Dependencies...');
-  }
-  const dependencies = {
-    ...(await getLatest(currentPackage.dependencies)),
-    ...fixedModules.dependencies,
-  };
+  let latestDevDeps = {};
+  let latestDeps = {};
+
+  // retrieve dependencies in parrallel
+  await Promise.all(
+    [latestDevDeps = await getLatest(currentPackage.devDependencies)],
+    [latestDeps = await getLatest(currentPackage.dependencies)],
+  );
+
+  const devDependencies = { ...latestDevDeps, ...fixedModules.devDependencies };
+  const dependencies = { ...latestDeps, ...fixedModules.dependencies };
 
   const fileName = `package.json${overwrite ? '' : '.new'}`;
   const newPackagePath = path.join(parentDir, fileName);
@@ -118,32 +147,13 @@ const upgradePackage = async () => {
     dependencies,
   }, { space: 2 });
 
-
   fs.writeFile(newPackagePath, newPackage, (err) => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to ${newPackagePath}`, err);
     } else if (!silent) {
       logger.info(`New ${fileName} saved to ${newPackagePath}\n`);
-
       if (report) {
-        logger.info('You want to see the report, thank you.');
-
-        const depSummary = reportData('dependencies', dependencies);
-        const devDepSummary = reportData('devDependencies', devDependencies);
-
-        const data = [].concat(depSummary, devDepSummary);
-        const t = new Table();
-
-        data.forEach((pkg) => {
-          t.cell('Package', pkg.package);
-          t.cell('Current', pkg.current);
-          t.cell('Latest', pkg.latest);
-          t.cell('Type', pkg.type);
-          t.newRow();
-        });
-
-        logger.info(`current ${Object.keys(currentPackage.dependencies)}`);
-        logger.info(`\n${t.toString()}`);
+        printReport(dependencies, devDependencies, latestDeps, latestDevDeps);
       }
     }
   });
@@ -154,10 +164,3 @@ try {
 } catch (err) {
   logger.error('There was a problem upgrading your node modules:', err);
 }
-
-
-/*
-const data = [
- { package: name, current: version, latest: version, type: dependencies },
-];
-*/

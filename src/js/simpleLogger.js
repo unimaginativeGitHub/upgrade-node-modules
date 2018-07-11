@@ -1,10 +1,6 @@
 const colorize = require('json-colorizer');
 const {
-  blue,
-  green,
-  gray,
-  yellow,
-  red,
+  blue, green, gray, yellow, red,
 } = require('chalk');
 
 const colorObj = (txt) => {
