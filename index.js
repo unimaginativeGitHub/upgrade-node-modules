@@ -107,11 +107,11 @@ const printReport = (dependencies, devDependencies, latestDeps, latestDevDeps) =
   const t = new Table();
   summary.forEach((pkg) => {
     const fixed = pkg.wanted !== pkg.latest;
-    t.cell('Package', fixed ? yellow(pkg.module) : red(pkg.module));
-    t.cell('Current', fixed ? yellow(pkg.current) : pkg.current);
-    t.cell('Wanted', fixed ? yellow(pkg.wanted) : green(pkg.wanted));
-    t.cell('Latest', magenta(pkg.latest));
-    t.cell('Type', fixed ? yellow(pkg.type) : pkg.type);
+    t.cell('Package'.underline(), fixed ? yellow(pkg.module) : red(pkg.module));
+    t.cell('Current'.underline(), fixed ? yellow(pkg.current) : pkg.current);
+    t.cell('Wanted'.underline(), fixed ? yellow(pkg.wanted) : green(pkg.wanted));
+    t.cell('Latest'.underline(), magenta(pkg.latest));
+    t.cell('Type'.underline(), fixed ? yellow(pkg.type) : pkg.type);
     t.newRow();
   });
 
