@@ -61,3 +61,6 @@ Overwrite your existing `package.json` with the new module versions (instead of 
 ```
 upgrade-node-modules -w
 ```
+
+### Report
+Print a log to stdout that shows a table of out-of-date packages with the currently installed version, the desired version (as defined in package.json), and the latest version (per npm).
