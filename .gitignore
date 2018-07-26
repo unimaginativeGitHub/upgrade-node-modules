@@ -1,5 +1,8 @@
-#modules
+#report output
+updatedModules.html
 package.json.new
+
+#modules
 node_modules
 
 #apple bookkeeping
