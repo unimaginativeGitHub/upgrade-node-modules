@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const stableStringify = require('json-stable-stringify');
+const Convert = require('ansi-to-html');
 const strings = require('node-strings');
 const program = require('commander');
 const Table = require('easy-table');
@@ -9,9 +10,17 @@ const {
   green, yellow, red, magenta,
 } = require('chalk');
 
+const convert = new Convert();
+
 const { logger } = require('./src/js/simpleLogger');
 const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
+
+const formatHTML = (str) => {
+  const fixedText = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+  const html = convert.toHtml(fixedText).replace(/(?:color:#FFF)/g, 'color:rgb(175,173,36)');
+  return `<html><head><style>body a, span, tr, td { white-space: pre; }</style></head><body><font face='courier'><div>${html}</div></font></body></html>`;
+};
 
 // Parse options and provide helper text
 program
@@ -19,18 +28,20 @@ program
   .option('-v, --verbose', 'Show debug output')
   .option('-w, --overwrite', 'Overwrite the existing package.json rather then creating a pacakge.json.new file')
   .option('-s, --silent', 'Silence all logging')
-  .option('-r --report', 'Provide a log of which modules were updated')
+  .option('-r --report', 'Generate a log of which modules were updated')
+  .option('-f --saveReportToFile', 'Save the report to a file: updatedModules.html (default is to print to command line)')
   .parse(process.argv);
 
 const {
-  verbose, overwrite, silent, report,
+  verbose, overwrite, silent, report, saveReportToFile,
 } = program;
 
 if (verbose && !silent) {
   logger.debug(`Settings
-       • verbose:    ${verbose ? 'yes' : 'nope'}
-       • overwrite:  ${overwrite ? 'yes' : 'nope'}
-       • report:     ${report ? 'yes' : 'nope'}
+       • verbose:                  ${verbose ? 'yes' : 'nope'}
+       • overwrite:                ${overwrite ? 'yes' : 'nope'}
+       • generate report:          ${report ? 'yes' : 'nope'}
+       • do what with report:      ${saveReportToFile ? 'save it' : 'print it'}
   `);
 }
 
@@ -99,7 +110,7 @@ const generateReportData = (type, desired, latest) => {
   return data;
 };
 
-const printReport = (dependencies, devDependencies, latestDeps, latestDevDeps) => {
+const prepareReport = (dependencies, devDependencies, latestDeps, latestDevDeps) => {
   const depSummary = generateReportData('dependencies', dependencies, latestDeps);
   const devDepSummary = generateReportData('devDependencies', devDependencies, latestDevDeps);
 
@@ -118,7 +129,16 @@ const printReport = (dependencies, devDependencies, latestDeps, latestDevDeps) =
   const date = new Date();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const dateString = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`.underline();
-  logger.info(`\n\n${dateString}\n${summary.length ? t : '- no new dependencies -\n'}`);
+  return `${dateString}\n${summary.length ? t : '- no new dependencies -\n'}`;
+};
+
+const printReport = (text) => {
+  logger.info(`\n\n${text}`);
+};
+
+const saveReport = (text) => {
+  const filePath = path.join(parentDir, 'updatedModules.html');
+  fs.writeFileSync(filePath, formatHTML(text));
 };
 
 const upgradePackage = async () => {
@@ -152,8 +172,11 @@ const upgradePackage = async () => {
       logger.error(`Problem writing new ${fileName} to ${newPackagePath}`, err);
     } else if (!silent) {
       logger.info(`New ${fileName} saved to ${newPackagePath}\n`);
-      if (report) {
-        printReport(dependencies, devDependencies, latestDeps, latestDevDeps);
+      const reportText = report ? prepareReport(dependencies, devDependencies, latestDeps, latestDevDeps) : '';
+      if (report && saveReportToFile) {
+        saveReport(reportText);
+      } else if (report) {
+        printReport(reportText);
       }
     }
   });

@@ -64,3 +64,10 @@ upgrade-node-modules -w
 
 ### Report
 Print a log to stdout that shows a table of out-of-date packages with the currently installed version, the desired version (as defined in package.json), and the latest version (per npm).
+```
+upgrade-node-modules -r
+```
+or add an f flag to save the report to a file:
+```
+upgrade-node-modules -rf
+```
