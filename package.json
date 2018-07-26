@@ -38,5 +38,5 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint ."
   },
-  "version": "1.0.3"
+  "version": "1.0.4"
 }

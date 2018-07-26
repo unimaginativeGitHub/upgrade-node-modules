@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const stableStringify = require('json-stable-stringify');
 const Convert = require('ansi-to-html');
-const strings = require('node-strings');
 const program = require('commander');
 const Table = require('easy-table');
 const path = require('path');

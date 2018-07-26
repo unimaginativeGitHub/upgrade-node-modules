@@ -71,3 +71,8 @@ or add an f flag to save the report to a file:
 ```
 upgrade-node-modules -rf
 ```
+
+---
+
+Thank you for taking a look at the project. Open an Issue if you find bugs, have an improvement, or caught a typo. Cheers!
+
