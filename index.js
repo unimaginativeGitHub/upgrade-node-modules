@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 const stableStringify = require('json-stable-stringify');
+/* eslint-disable no-unused-vars */
+const strings = require('node-strings'); // used for styling
+/* eslint-enable no-unused-vars */
 const Convert = require('ansi-to-html');
 const program = require('commander');
 const Table = require('easy-table');
