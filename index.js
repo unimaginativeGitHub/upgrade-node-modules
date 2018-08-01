@@ -3,7 +3,6 @@ const stableStringify = require('json-stable-stringify');
 /* eslint-disable no-unused-vars */
 const strings = require('node-strings'); // used for styling
 /* eslint-enable no-unused-vars */
-const Convert = require('ansi-to-html');
 const program = require('commander');
 const Table = require('easy-table');
 const path = require('path');
@@ -12,17 +11,9 @@ const {
   green, yellow, red, magenta,
 } = require('chalk');
 
-const convert = new Convert();
-
 const { logger } = require('./src/js/simpleLogger');
 const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
-
-const formatHTML = (str) => {
-  const fixedText = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
-  const html = convert.toHtml(fixedText).replace(/(?:color:#FFF)/g, 'color:rgb(175,173,36)');
-  return `<html><head><style>body a, span, tr, td { white-space: pre; }</style></head><body><font face='courier'><div>${html}</div></font></body></html>`;
-};
 
 // Parse options and provide helper text
 program
@@ -31,7 +22,7 @@ program
   .option('-w, --overwrite', 'Overwrite the existing package.json rather then creating a pacakge.json.new file')
   .option('-s, --silent', 'Silence all logging')
   .option('-r --report', 'Generate a log of which modules were updated')
-  .option('-f --saveReportToFile', 'Save the report to a file: updatedModules.html (default is to print to command line)')
+  .option('-f --saveReportToFile', 'Save the report to a file: updatedModules.txt (default is to print to command line)')
   .parse(process.argv);
 
 const {
@@ -139,8 +130,8 @@ const printReport = (text) => {
 };
 
 const saveReport = (text) => {
-  const filePath = path.join(parentDir, 'updatedModules.html');
-  fs.writeFileSync(filePath, formatHTML(text));
+  const filePath = path.join(parentDir, 'updatedModules.txt');
+  fs.writeFileSync(filePath, text);
 };
 
 const upgradePackage = async () => {
