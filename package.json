@@ -7,7 +7,6 @@
     "url": "https://github.com/unimaginativeGitHub/upgrade-node-modules/issues"
   },
   "dependencies": {
-    "ansi-to-html": "0.6.6",
     "chalk": "2.4.1",
     "commander": "2.16.0",
     "easy-table": "1.1.1",
@@ -38,5 +37,5 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint ."
   },
-  "version": "1.0.5"
+  "version": "1.0.7"
 }

@@ -3,7 +3,6 @@ const stableStringify = require('json-stable-stringify');
 /* eslint-disable no-unused-vars */
 const strings = require('node-strings'); // used for styling
 /* eslint-enable no-unused-vars */
-const Convert = require('ansi-to-html');
 const program = require('commander');
 const Table = require('easy-table');
 const path = require('path');
@@ -12,17 +11,9 @@ const {
   green, yellow, red, magenta,
 } = require('chalk');
 
-const convert = new Convert();
-
 const { logger } = require('./src/js/simpleLogger');
 const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
-
-const formatHTML = (str) => {
-  const fixedText = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
-  const html = convert.toHtml(fixedText).replace(/(?:color:#FFF)/g, 'color:rgb(175,173,36)');
-  return `<html><head><style>body a, span, tr, td { white-space: pre; }</style></head><body><font face='courier'><div>${html}</div></font></body></html>`;
-};
 
 // Parse options and provide helper text
 program
@@ -118,6 +109,37 @@ const prepareReport = (dependencies, devDependencies, latestDeps, latestDevDeps)
 
   const summary = [...depSummary, ...devDepSummary];
   const t = new Table();
+
+  const html = contents => `<!DOCTYPE html><html>${contents}</html>`;
+  const head = () => ('<head> <style> body a, span, td, tr, th { white-space: pre; text-align: left; } tr, td, th { border-style:hidden; padding: 0 20px 0 0; table { border-style:hidden; }} </style></head>');
+  const body = contents => `<body><font face='menlo'>${contents}</font></body>`;
+  const table = contents => `<table>${contents}</table>`;
+  const row = contents => `<tr>${contents}</tr>`;
+  const under = contents => `<span style="text-decoration: underline">${contents}</span>`;
+  const header = contents => `<th>${under(contents)}</th>`;
+  const entry = contents => `<td>${contents}</td>`;
+  const color = (colorCode, contents) => `<span style="color:${colorCode}">${contents}</span>`;
+
+  const outputHeaderRow = () => {
+    let entries = '';
+    ['Package', 'Current', 'Wanted', 'Latest', 'Type'].forEach((next) => {
+      entries += header(next);
+    });
+    return row(entries);
+  };
+
+  let tableBody = '';
+  summary.forEach((pkg) => {
+    const fixed = pkg.wanted !== pkg.latest;
+    let bodyString = '';
+    bodyString += entry(fixed ? color('#F7DC6F', pkg.module) : color('#FF1B1B', pkg.module));
+    bodyString += entry(fixed ? color('#F7DC6F', pkg.current) : color('black', pkg.current));
+    bodyString += entry(fixed ? color('#F7DC6F', pkg.wanted) : color('#56CA00', pkg.wanted));
+    bodyString += entry(color('#FF00E4', pkg.latest));
+    bodyString += entry(fixed ? color('#F7DC6F', pkg.type) : color('black', pkg.type));
+    tableBody += row(bodyString);
+  });
+
   summary.forEach((pkg) => {
     const fixed = pkg.wanted !== pkg.latest;
     t.cell('Package'.underline(), fixed ? yellow(pkg.module) : red(pkg.module));
@@ -130,17 +152,20 @@ const prepareReport = (dependencies, devDependencies, latestDeps, latestDevDeps)
 
   const date = new Date();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const dateString = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`.underline();
-  return `${dateString}\n${summary.length ? t : '- no new dependencies -\n'}`;
+  const dateString = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  return {
+    txt: `${dateString.underline()}\n${summary.length ? t : '- no new dependencies -\n'}`,
+    html: html(head() + body(table(row(header(dateString)) + outputHeaderRow() + tableBody))),
+  };
 };
 
 const printReport = (text) => {
   logger.info(`\n\n${text}`);
 };
 
-const saveReport = (text) => {
+const saveReport = (html) => {
   const filePath = path.join(parentDir, 'updatedModules.html');
-  fs.writeFileSync(filePath, formatHTML(text));
+  fs.writeFileSync(filePath, html);
 };
 
 const upgradePackage = async () => {
@@ -174,11 +199,12 @@ const upgradePackage = async () => {
       logger.error(`Problem writing new ${fileName} to ${newPackagePath}`, err);
     } else if (!silent) {
       logger.info(`New ${fileName} saved to ${newPackagePath}\n`);
-      const reportText = report ? prepareReport(dependencies, devDependencies, latestDeps, latestDevDeps) : '';
+      const reportText = report
+        ? prepareReport(dependencies, devDependencies, latestDeps, latestDevDeps) : {};
       if (report && saveReportToFile) {
-        saveReport(reportText);
+        saveReport(reportText.html);
       } else if (report) {
-        printReport(reportText);
+        printReport(reportText.txt);
       }
     }
   });
