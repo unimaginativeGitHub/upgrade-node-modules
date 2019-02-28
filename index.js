@@ -16,11 +16,14 @@ program
   .option('-w, --overwrite', 'Overwrite the existing package.json')
   .option('-s, --silent', 'Silence all logging')
   .option('-r --report', 'Generate a log of which modules were updated')
+  .option('-u --upgrade', 'Run npm install after updating the package.json')
+  .option('-a --audit', 'Generate an audit report')
+  // .option('-o --onlyAudit', 'Only generate the audit report for the current module set')
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
   .parse(process.argv);
 
 const {
-  verbose, overwrite, silent, report, saveReportToFile,
+  verbose, overwrite, silent, report, saveReportToFile, upgrade,
 } = program;
 
 if (verbose && !silent) {
@@ -109,7 +112,7 @@ const upgradePackage = async () => {
     dependencies,
   }, { space: 2 });
 
-  fs.writeFile(newPackagePath, newPackage, (err) => {
+  fs.writeFile(newPackagePath, newPackage, async (err) => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to:\n      ${newPackagePath}`, err);
     } else if (!silent) {
@@ -119,6 +122,14 @@ const upgradePackage = async () => {
         : {};
       if (report && saveReportToFile) {
         saveReport(reportText.html);
+        if (upgrade) {
+          const auditBefore = await asyncExec('npm audit --json');
+          logger.warn('before', auditBefore);
+          await asyncExec('npm install');
+          const auditAfter = await asyncExec('npm audit --json');
+          logger.warn('after', auditAfter);
+          logger.warn('finished!');
+        }
       } else if (report) {
         printReport(reportText.txt);
       }
