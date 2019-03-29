@@ -153,7 +153,9 @@ const upgradePackage = async () => {
         if (!silent) {
           logger.info('installing new modules');
         }
-        await asyncExec('npm install');
+        if (upgrade) {
+          await asyncExec('npm install');
+        }
 
         if (runAudit) {
           if (fixAudit) {
