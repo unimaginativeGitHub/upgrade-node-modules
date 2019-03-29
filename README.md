@@ -3,6 +3,25 @@ Simple script to parse your package.json and upgrade each package version to lat
 
 ---
 
+## New Features!
+• Upgrade (`-u`)
+• Audit (`-a`)
+• Fix audit vulnerabilities (`-x`)
+
+### Upgrade (-u)
+Automatically upgrades your node modules after running the dependency review.
+Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
+
+### Security Audit (-a)
+Runs `npm audit` under the hood and will provide a before and after report when writing to file or console.
+Note: selecting audit will automatically produce a report (console if `-f` is not selected)
+
+### Fix Audit (-x)
+Runs `npm audit` before and after upgrade and also runs `npm audit --fix`. If you have report output selected, a before and after audit report will be added. Additionally, if vulnerabilities were reported, a brief security progress report will be included in the report.
+Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
+
+---
+
 ## Install globally
 
 **Via npm**
@@ -38,41 +57,42 @@ The `upgrade-node-modules` script has the option of locking down any number of *
 }
 ```
 
-### Help
+### Help (-h)
 Display help.
 ```
 upgrade-node-modules -h
 ```
 
-### Verbose
+### Verbose (-v)
 Display all console output.
 ```
 upgrade-node-modules -v
 ```
 
-### Silent
+### Silent (-s)
 Suppress all console output.
 ```
 upgrade-node-modules -s
 ```
 
-### Overwrite
+### Overwrite (-w)
 Overwrite your existing `package.json` with the new module versions (instead of creating a `package.json.new`).
 ```
 upgrade-node-modules -w
 ```
 
-### Report
+### Report (-r)
 Print a log to stdout that shows a table of out-of-date packages with the currently installed version, the desired version (as defined in package.json), and the latest version (per npm).
 ```
 upgrade-node-modules -r
 ```
-or add an f flag to save the report to a file:
+
+### File (-f)
+Write the report to file (html). Super handy for uploading or emailing via automation.
 ```
-upgrade-node-modules -rf
+upgrade-node-modules -f
 ```
 
 ---
 
 Thank you for taking a look at the project. Open an Issue if you find bugs, have an improvement, or caught a typo. Cheers!
-

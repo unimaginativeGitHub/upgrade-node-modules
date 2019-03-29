@@ -34,7 +34,7 @@ const overwrite = upgrade || fixAudit || overwriteFlag;
 const runAudit = runAuditFlag || fixAudit;
 
 // If the save to file flag is on, we've got to generate a report
-const report = reportFlag || saveReportToFile;
+const report = reportFlag || saveReportToFile || runAuditFlag;
 
 if (verbose && !silent) {
   logger.debug(`Settings
@@ -70,7 +70,7 @@ const getAuditResults = async (when) => {
     audit = auditResults.stdout;
   } catch (error) {
     if (error && error.stdout && error.stdout.length) {
-      logger.info(`Vulnerabilities found in '${when}':`);
+      logger.info(`Vulnerabilities found in '${when}'`);
       audit = error.stdout;
     } else {
       logger.info(`Unable to generate audit '${when}':`, error);

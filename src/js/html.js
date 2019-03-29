@@ -75,7 +75,7 @@ const formatAuditHTML = (audit, when) => {
   if (parsedAudit && parsedAudit.metadata && parsedAudit.metadata.vulnerabilities) {
     const { vulnerabilities } = parsedAudit.metadata;
     Object.keys(vulnerabilities).forEach((r) => {
-      const indicator = vulnerabilities[r] ? ' ⇦' : '';
+      const indicator = vulnerabilities[r] ? ' &#8678;' : '';
       const firstCol = entry(color(capitalize(r), colorKey[r]));
       const secondCol = entry(color(`${vulnerabilities[r]}${indicator}`, colorKey[r]));
       vulnerabilityRows.push(row(firstCol + secondCol));
