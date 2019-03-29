@@ -23,7 +23,7 @@ program
   .parse(process.argv);
 
 const {
-  verbose, silent, report, saveReportToFile,
+  verbose, silent, report: reportFlag, saveReportToFile,
   overwrite: overwriteFlag, upgrade, runAudit: runAuditFlag, fixAudit,
 } = program;
 
@@ -32,6 +32,9 @@ const overwrite = upgrade || fixAudit || overwriteFlag;
 
 // If we're gonna fix the audit, we've got to run the audit
 const runAudit = runAuditFlag || fixAudit;
+
+// If the save to file flag is on, we've got to generate a report
+const report = reportFlag || saveReportToFile;
 
 if (verbose && !silent) {
   logger.debug(`Settings
@@ -179,7 +182,7 @@ const upgradePackage = async () => {
         )
         : {};
 
-      if (report && saveReportToFile) {
+      if (saveReportToFile) {
         saveReport(html);
       } else if (report) {
         printReport(txt);
