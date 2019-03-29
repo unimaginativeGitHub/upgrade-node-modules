@@ -119,7 +119,7 @@ const generateHTML = (summary, date, auditB, auditFixReport, auditA) => {
   const fix = auditFixReport.length ? `<br /><b>${under('Securing modules...')}</b><br />${auditFixReport.replace('\n', '<br />')}<br />` : '';
 
   const htmlBody = (auditB.length) || (auditA.length)
-    ? `${tableBody}${formatAuditHTML(auditB, 'Before')}${fix}${formatAuditHTML(auditA, 'After')}`
+    ? `${tableBody}${formatAuditHTML(auditB, 'Before')}${fix}${formatAuditHTML(auditA, 'After&nbsp;')}`
     : tableBody;
 
   return html(`

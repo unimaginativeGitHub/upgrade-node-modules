@@ -63,12 +63,18 @@ if (fs.existsSync(fixedModulePath)) {
 }
 
 const getAuditResults = async (when) => {
-  let audit = {};
+  let audit = '{}';
   try {
     logger.info(`running '${when}' security review`);
-    audit = (await asyncExec('npm audit --json')).stdout;
+    const auditResults = await asyncExec('npm audit --json');
+    audit = auditResults.stdout;
   } catch (error) {
-    logger.info(`Unable to generate audit '${when}':`, error);
+    if (error && error.stdout && error.stdout.length) {
+      logger.info(`Vulnerabilities found in '${when}':`);
+      audit = error.stdout;
+    } else {
+      logger.info(`Unable to generate audit '${when}':`, error);
+    }
   }
   return audit;
 };
