@@ -23,8 +23,12 @@ program
   .parse(process.argv);
 
 const {
-  verbose, overwrite, silent, report, saveReportToFile, upgrade, runAudit, fixAudit,
+  verbose, silent, report, saveReportToFile,
+  overwrite: overwriteOption, upgrade, runAudit, fixAudit,
 } = program;
+
+// We can't upgrade of fixAudit unless overwrite is selected
+const overwrite = upgrade || fixAudit || overwriteOption;
 
 if (verbose && !silent) {
   logger.debug(`Settings
@@ -131,21 +135,29 @@ const upgradePackage = async () => {
   fs.writeFile(newPackagePath, newPackage, async (err) => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to:\n      ${newPackagePath}`, err);
-    } else if (!silent) {
-      logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
+    } else {
+      if (!silent) {
+        logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
+      }
 
       let auditAfter = '{}';
       let fixReport = '';
 
-      if (overwrite && upgrade) {
-        logger.info('installing new modules');
+      if (overwrite) {
+        if (!silent) {
+          logger.info('installing new modules');
+        }
         await asyncExec('npm install');
 
         if (runAudit) {
           if (fixAudit) {
-            logger.info('checking module security');
+            if (!silent) {
+              logger.info('checking module security');
+            }
             fixReport = (await asyncExec('npm audit fix')).stdout;
-            logger.info('audit fix result:', fixReport);
+            if (verbose && !silent) {
+              logger.info('audit fix result:', fixReport);
+            }
           }
           auditAfter = await getAuditResults('after');
         }
