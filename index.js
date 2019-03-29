@@ -24,11 +24,14 @@ program
 
 const {
   verbose, silent, report, saveReportToFile,
-  overwrite: overwriteOption, upgrade, runAudit, fixAudit,
+  overwrite: overwriteFlag, upgrade, runAudit: runAuditFlag, fixAudit,
 } = program;
 
 // We can't upgrade of fixAudit unless overwrite is selected
-const overwrite = upgrade || fixAudit || overwriteOption;
+const overwrite = upgrade || fixAudit || overwriteFlag;
+
+// If we're gonna fix the audit, we've got to run the audit
+const runAudit = runAuditFlag || fixAudit;
 
 if (verbose && !silent) {
   logger.debug(`Settings
