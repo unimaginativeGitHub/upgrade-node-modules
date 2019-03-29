@@ -8,17 +8,24 @@ Simple script to parse your package.json and upgrade each package version to lat
 • Audit (`-a`)
 • Fix audit vulnerabilities (`-x`)
 
-### Upgrade (-u)
+### Upgrade
 Automatically upgrades your node modules after running the dependency review.
 Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
 
-### Security Audit (-a)
+### Security Audit
 Runs `npm audit` under the hood and will provide a before and after report when writing to file or console.
 Note: selecting audit will automatically produce a report (console if `-f` is not selected)
 
-### Fix Audit (-x)
+### Fix Audit
 Runs `npm audit` before and after upgrade and also runs `npm audit --fix`. If you have report output selected, a before and after audit report will be added. Additionally, if vulnerabilities were reported, a brief security progress report will be included in the report.
-Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
+Note: selecting fix audit will automatically overwrite your package.json, essentially adding `-w` to the fix audit call.
+
+### Taking Advantage of the new features:
+> Upgrade node modules, run audits, fix vulnerabilities and save an html report
+```
+npm upgrade-node-modules -uxf
+```
+
 
 ---
 
@@ -57,37 +64,37 @@ The `upgrade-node-modules` script has the option of locking down any number of *
 }
 ```
 
-### Help (-h)
+### Help
 Display help.
 ```
 upgrade-node-modules -h
 ```
 
-### Verbose (-v)
+### Verbose
 Display all console output.
 ```
 upgrade-node-modules -v
 ```
 
-### Silent (-s)
+### Silent
 Suppress all console output.
 ```
 upgrade-node-modules -s
 ```
 
-### Overwrite (-w)
+### Overwrite
 Overwrite your existing `package.json` with the new module versions (instead of creating a `package.json.new`).
 ```
 upgrade-node-modules -w
 ```
 
-### Report (-r)
+### Report
 Print a log to stdout that shows a table of out-of-date packages with the currently installed version, the desired version (as defined in package.json), and the latest version (per npm).
 ```
 upgrade-node-modules -r
 ```
 
-### File (-f)
+### File
 Write the report to file (html). Super handy for uploading or emailing via automation.
 ```
 upgrade-node-modules -f
