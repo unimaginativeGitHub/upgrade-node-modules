@@ -1,5 +1,5 @@
 const {
-  green, yellow, red, magenta, underline,
+  green, yellow, red, magenta, underline, blue,
 } = require('chalk');
 
 const getColumnWidths = (columns, summary) => {
@@ -22,6 +22,7 @@ const getColumnWidths = (columns, summary) => {
 };
 
 const extraSpaces = (entry, columnWidth) => ' '.repeat(columnWidth - entry.length);
+const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
 
 const formatEntry = ({ respectFixed, color }, entry, isFixed) => {
   switch (respectFixed && isFixed ? 'yellow' : color) {
@@ -33,7 +34,39 @@ const formatEntry = ({ respectFixed, color }, entry, isFixed) => {
   }
 };
 
-const generateText = (summary, date) => {
+const formatAuditText = (audit, when) => {
+  const rWidth = 12;
+
+  const colorKey = {
+    info: i => blue(i),
+    low: i => green(i),
+    moderate: i => yellow(i),
+    high: i => magenta(i),
+    critical: i => red(i),
+  };
+
+  const auditText = [];
+
+  auditText.push(underline(when ? `Audit Report: ${when}` : 'Audit Report'));
+  auditText.push(underline('Risk') + extraSpaces('Risk', rWidth) + underline('Vulnerabilities'));
+
+  const parsedAudit = JSON.parse(audit);
+
+  if (parsedAudit && parsedAudit.metadata && parsedAudit.metadata.vulnerabilities) {
+    const { vulnerabilities } = parsedAudit.metadata;
+    Object.keys(vulnerabilities).forEach((r) => {
+      const row = colorKey[r](capitalize(r) + extraSpaces(r, rWidth) + vulnerabilities[r]);
+      const indicator = vulnerabilities[r] ? ' ⇦' : '';
+      auditText.push(row + indicator);
+    });
+  }
+
+  return auditText.length > 2
+    ? `\n${auditText.join('\n')}\n`
+    : '';
+};
+
+const generateText = (summary, date, auditB, auditFixReport, auditA) => {
   // set header, fixed val respect and color settings
   let columnsProps = {
     package: { header: 'Package', respectFixed: true, color: 'red' },
@@ -62,10 +95,17 @@ const generateText = (summary, date) => {
     return entryRow;
   });
 
-  if (summary.length) {
-    return `${underline(date)}\n${headerRow}\n${tableBody.join('\n')}\n`;
+  const reportText = summary.length
+    ? `${underline(date)}\n${headerRow}\n${tableBody.join('\n')}\n`
+    : `${underline(date)}\n- no new dependencies -\n`;
+
+  const fix = auditFixReport.length ? `\n${underline('Securing modules...')}\n${auditFixReport}` : '';
+
+  if ((auditB && Object.keys(auditB).length) || (auditA && Object.keys(auditA).length)) {
+    return `${reportText}${formatAuditText(auditB, 'Before')}${fix}${formatAuditText(auditA, 'After')}`;
   }
-  return `${underline(date)}\n- no new dependencies -\n`;
+
+  return reportText;
 };
 
 module.exports = {

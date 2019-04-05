@@ -59,7 +59,39 @@ const formatEntry = ({ respectFixed, color: setColor }, text, isFixed) => {
   return entry(color(text, colorToApply));
 };
 
-const generateHTML = (summary, date) => {
+const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
+
+const formatAuditHTML = (audit, when) => {
+  const colorKey = {
+    info: '#56CA00',
+    low: '#0000FF',
+    moderate: '#F7DC6F',
+    high: '#FF00E4',
+    critical: '#FF1B1B',
+  };
+
+  const parsedAudit = JSON.parse(audit);
+  const vulnerabilityRows = [];
+  if (parsedAudit && parsedAudit.metadata && parsedAudit.metadata.vulnerabilities) {
+    const { vulnerabilities } = parsedAudit.metadata;
+    Object.keys(vulnerabilities).forEach((r) => {
+      const indicator = vulnerabilities[r] ? ' &#8678;' : '';
+      const firstCol = entry(color(capitalize(r), colorKey[r]));
+      const secondCol = entry(color(`${vulnerabilities[r]}${indicator}`, colorKey[r]));
+      vulnerabilityRows.push(row(firstCol + secondCol));
+    });
+  }
+  return vulnerabilityRows.length
+    ? `<br />${table(`
+      ${row('')}
+      ${row(header(when ? `Audit Report: ${when}` : 'Audit Report'))}
+      ${row(header('Risk') + header('Vulnerabilities'))}
+      ${vulnerabilityRows.join('\n')}
+    `)}`
+    : '';
+};
+
+const generateHTML = (summary, date, auditB, auditFixReport, auditA) => {
   // could add an extra check here to see if there are any module changes - build array of not fixed
   const columnsProps = {
     package: { header: 'Package', respectFixed: true, color: '#FF1B1B' },
@@ -84,9 +116,15 @@ const generateHTML = (summary, date) => {
         ${outputHeaderRow(columnsProps)}
         ${summaryRows}`);
 
+  const fix = auditFixReport.length ? `<br /><b>${under('Securing modules...')}</b><br />${auditFixReport.replace('\n', '<br />')}<br />` : '';
+
+  const htmlBody = (auditB.length) || (auditA.length)
+    ? `${tableBody}${formatAuditHTML(auditB, 'Before')}${fix}${formatAuditHTML(auditA, 'After&nbsp;')}`
+    : tableBody;
+
   return html(`
   ${head()}
-  ${body(tableBody)}`);
+  ${body(htmlBody)}`);
 };
 
 module.exports = {

@@ -20,7 +20,16 @@ const organizeData = (currentPackage, type, desired, latest) => {
   return data;
 };
 
-const generateReport = (currentPkg, dependencies, devDependencies, latestDeps, latestDevDeps) => {
+const generateReport = (
+  currentPkg,
+  dependencies,
+  devDependencies,
+  latestDeps,
+  latestDevDeps,
+  auditBefore,
+  fixReport,
+  auditAfter,
+) => {
   const depSummary = organizeData(currentPkg, 'dependencies', dependencies, latestDeps);
   const devDepSummary = organizeData(currentPkg, 'devDependencies', devDependencies, latestDevDeps);
   const summary = [...depSummary, ...devDepSummary];
@@ -28,8 +37,8 @@ const generateReport = (currentPkg, dependencies, devDependencies, latestDeps, l
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const dateString = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
   return {
-    txt: generateText(summary, dateString),
-    html: generateHTML(summary, dateString),
+    txt: generateText(summary, dateString, auditBefore, fixReport, auditAfter),
+    html: generateHTML(summary, dateString, auditBefore, fixReport, auditAfter),
   };
 };
 

@@ -7,18 +7,18 @@
     "url": "https://github.com/unimaginativeGitHub/upgrade-node-modules/issues"
   },
   "dependencies": {
-    "chalk": "2.4.1",
-    "commander": "2.17.1",
-    "json-colorizer": "1.1.1",
+    "chalk": "2.4.2",
+    "commander": "2.19.0",
+    "json-colorizer": "2.1.2",
     "json-stable-stringify": "1.0.1"
   },
   "description": "Lock down you module versions and upgrade to the latest stable versions when you want to",
   "devDependencies": {
-    "eslint": "5.4.0",
+    "eslint": "5.15.3",
     "eslint-config-airbnb": "17.1.0",
-    "eslint-plugin-import": "2.14.0",
-    "eslint-plugin-jsx-a11y": "6.1.1",
-    "eslint-plugin-react": "7.11.1"
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-jsx-a11y": "6.2.1",
+    "eslint-plugin-react": "7.12.4"
   },
   "homepage": "https://github.com/unimaginativeGitHub/upgrade-node-modules#readme",
   "keywords": [
@@ -35,5 +35,5 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint ."
   },
-  "version": "1.1.0"
+  "version": "1.2.0"
 }

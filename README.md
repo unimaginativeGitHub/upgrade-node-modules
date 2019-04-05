@@ -3,6 +3,32 @@ Simple script to parse your package.json and upgrade each package version to lat
 
 ---
 
+## New Features!
+• Upgrade (`-u`)
+• Audit (`-a`)
+• Fix audit vulnerabilities (`-x`)
+
+### Upgrade
+Automatically upgrades your node modules after running the dependency review.
+Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
+
+### Security Audit
+Runs `npm audit` under the hood and will provide a before and after report when writing to file or console.
+Note: selecting audit will automatically produce a report (console if `-f` is not selected)
+
+### Fix Audit
+Runs `npm audit` before and after upgrade and also runs `npm audit --fix`. If you have report output selected, a before and after audit report will be added. Additionally, if vulnerabilities were reported, a brief security progress report will be included in the report.
+Note: selecting fix audit will automatically overwrite your package.json, essentially adding `-w` to the fix audit call.
+
+### Taking Advantage of the new features:
+> Upgrade node modules, run audits, fix vulnerabilities and save an html report
+```
+npm upgrade-node-modules -uxf
+```
+
+
+---
+
 ## Install globally
 
 **Via npm**
@@ -67,12 +93,13 @@ Print a log to stdout that shows a table of out-of-date packages with the curren
 ```
 upgrade-node-modules -r
 ```
-or add an f flag to save the report to a file:
+
+### File
+Write the report to file (html). Super handy for uploading or emailing via automation.
 ```
-upgrade-node-modules -rf
+upgrade-node-modules -f
 ```
 
 ---
 
 Thank you for taking a look at the project. Open an Issue if you find bugs, have an improvement, or caught a typo. Cheers!
-

@@ -16,17 +16,33 @@ program
   .option('-w, --overwrite', 'Overwrite the existing package.json')
   .option('-s, --silent', 'Silence all logging')
   .option('-r --report', 'Generate a log of which modules were updated')
+  .option('-u --upgrade', 'Run npm install after updating the package.json')
+  .option('-a --runAudit', 'Generate an audit report')
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
+  .option('-x --fixAudit', 'Run fix audit')
   .parse(process.argv);
 
 const {
-  verbose, overwrite, silent, report, saveReportToFile,
+  verbose, silent, report: reportFlag, saveReportToFile,
+  overwrite: overwriteFlag, upgrade, runAudit: runAuditFlag, fixAudit,
 } = program;
+
+// We can't upgrade of fixAudit unless overwrite is selected
+const overwrite = upgrade || fixAudit || overwriteFlag;
+
+// If we're gonna fix the audit, we've got to run the audit
+const runAudit = runAuditFlag || fixAudit;
+
+// If the save to file flag is on, we've got to generate a report
+const report = reportFlag || saveReportToFile || runAuditFlag;
 
 if (verbose && !silent) {
   logger.debug(`Settings
        • verbose:                  ${verbose ? 'yes' : 'nope'}
        • overwrite:                ${overwrite ? 'yes' : 'nope'}
+       • install new modules:      ${overwrite && upgrade ? 'yes' : 'nope'}
+       • run audit:                ${runAudit ? 'yes' : 'nope'}
+       • fix audit:                ${runAudit && fixAudit ? 'yes' : 'nope'}
        • generate report:          ${report ? 'yes' : 'nope'}
        • do what with report:      ${saveReportToFile ? 'save it' : 'print it'}
   `);
@@ -45,6 +61,23 @@ const fixedModulePath = path.join(parentDir, 'fixedModules.json');
 if (fs.existsSync(fixedModulePath)) {
   fixedModules = JSON.parse(fs.readFileSync(fixedModulePath, 'utf8'));
 }
+
+const getAuditResults = async (when) => {
+  let audit = '{}';
+  try {
+    logger.info(`running '${when}' security review`);
+    const auditResults = await asyncExec('npm audit --json');
+    audit = auditResults.stdout;
+  } catch (error) {
+    if (error && error.stdout && error.stdout.length) {
+      logger.info(`Vulnerabilities found in '${when}'`);
+      audit = error.stdout;
+    } else {
+      logger.info(`Unable to generate audit '${when}':`, error);
+    }
+  }
+  return audit;
+};
 
 const getLatest = async (dependencies) => {
   const newDependencies = {};
@@ -89,9 +122,11 @@ const upgradePackage = async () => {
 
   let latestDevDeps = {};
   let latestDeps = {};
+  let auditBefore;
 
   // retrieve dependencies in parrallel
   await Promise.all(
+    [auditBefore = runAudit ? await getAuditResults('before') : '{}'],
     [latestDevDeps = await getLatest(currentPackage.devDependencies)],
     [latestDeps = await getLatest(currentPackage.dependencies)],
   );
@@ -109,22 +144,70 @@ const upgradePackage = async () => {
     dependencies,
   }, { space: 2 });
 
-  fs.writeFile(newPackagePath, newPackage, (err) => {
+  fs.writeFile(newPackagePath, newPackage, async (err) => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to:\n      ${newPackagePath}`, err);
-    } else if (!silent) {
-      logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
-      const reportText = report
-        ? generateReport(currentPackage, dependencies, devDependencies, latestDeps, latestDevDeps)
+    } else {
+      if (!silent) {
+        logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
+      }
+
+      let auditAfter = '{}';
+      let fixReport = '';
+
+      if (overwrite) {
+        if (!silent) {
+          logger.info('installing new modules');
+        }
+        if (upgrade) {
+          await asyncExec('npm install');
+        }
+
+        if (runAudit) {
+          if (fixAudit) {
+            if (!silent) {
+              logger.info('checking module security');
+            }
+            fixReport = (await asyncExec('npm audit fix')).stdout;
+            if (verbose && !silent) {
+              logger.info('audit fix result:', fixReport);
+            }
+          }
+          auditAfter = await getAuditResults('after');
+        }
+      }
+
+      const { html, txt } = report
+        ? generateReport(
+          currentPackage,
+          dependencies,
+          devDependencies,
+          latestDeps,
+          latestDevDeps,
+          auditBefore,
+          fixReport,
+          auditAfter,
+        )
         : {};
-      if (report && saveReportToFile) {
-        saveReport(reportText.html);
+
+      if (saveReportToFile) {
+        saveReport(html);
       } else if (report) {
-        printReport(reportText.txt);
+        printReport(txt);
       }
     }
   });
 };
+
+/*
+  TO DO
+  •  Add the audit to the report text
+  •  Add the upgrade console statements
+  •  Add a method to format html and text audit logs for the current package.json
+  •  Inject `after` audit logs
+  •  In the end - need a `before` and `after` audit log if audit = true
+ */
+
 
 try {
   upgradePackage();
