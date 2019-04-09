@@ -3,7 +3,7 @@ const {
   blue, green, gray, yellow, red,
 } = require('chalk');
 
-const logLevels = ['off', 'debug', 'warn', 'info', 'error'];
+const logLevels = ['debug', 'warn', 'info', 'error', 'off'];
 
 // debug by default
 let logLevel = 0;
@@ -29,9 +29,9 @@ const colorObj = (txt) => {
 /* eslint-disable no-console */
 exports.logger = {
   setLogLevel,
-  error: (txt, msg) => logLevel >= 4 && console.log(`${red('error: ')}${colorObj(txt)}${colorObj(msg)}`),
-  info: (txt, msg) => logLevel >= 3 && console.log(`${green('info: ')}${colorObj(txt)}${colorObj(msg)}`),
-  warn: (txt, msg) => logLevel >= 2 && console.log(`${yellow('warn: ')}${colorObj(txt)}${colorObj(msg)}`),
-  debug: (txt, msg) => logLevel >= 1 && console.log(`${blue('debug: ')}${colorObj(txt)}${colorObj(msg)}`),
+  error: (txt, msg) => logLevel <= 3 && console.log(`${red('error: ')}${colorObj(txt)}${colorObj(msg)}`),
+  info: (txt, msg) => logLevel <= 2 && console.log(`${green('info: ')}${colorObj(txt)}${colorObj(msg)}`),
+  warn: (txt, msg) => logLevel <= 1 && console.log(`${yellow('warn: ')}${colorObj(txt)}${colorObj(msg)}`),
+  debug: (txt, msg) => logLevel <= 0 && console.log(`${blue('debug: ')}${colorObj(txt)}${colorObj(msg)}`),
 };
 /* eslint-enable no-console */
