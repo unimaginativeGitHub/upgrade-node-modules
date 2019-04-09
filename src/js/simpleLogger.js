@@ -3,6 +3,17 @@ const {
   blue, green, gray, yellow, red,
 } = require('chalk');
 
+const logLevels = ['off', 'debug', 'warn', 'info', 'error'];
+
+// debug by default
+let logLevel = 0;
+
+const setLogLevel = (nextLogLevel = 'debug') => {
+  const level = logLevels.findIndex(level => nextLogLevel === level);
+
+  logLevel = level === -1 ? 0 : level;
+}
+
 const colorObj = (txt) => {
   let newTxt = ''; // this means I'm not showing undefineds :/
   if (typeof txt === 'string') {
@@ -17,9 +28,10 @@ const colorObj = (txt) => {
 
 /* eslint-disable no-console */
 exports.logger = {
-  error: (txt, msg) => console.log(`${red('error: ')}${colorObj(txt)}${colorObj(msg)}`),
-  info: (txt, msg) => console.log(`${green('info: ')}${colorObj(txt)}${colorObj(msg)}`),
-  warn: (txt, msg) => console.log(`${yellow('warn: ')}${colorObj(txt)}${colorObj(msg)}`),
-  debug: (txt, msg) => console.log(`${blue('debug: ')}${colorObj(txt)}${colorObj(msg)}`),
+  setLogLevel,
+  error: (txt, msg) => logLevel >= 4 && console.log(`${red('error: ')}${colorObj(txt)}${colorObj(msg)}`),
+  info: (txt, msg) => logLevel >= 3 && console.log(`${green('info: ')}${colorObj(txt)}${colorObj(msg)}`),
+  warn: (txt, msg) => logLevel >= 2 && console.log(`${yellow('warn: ')}${colorObj(txt)}${colorObj(msg)}`),
+  debug: (txt, msg) => logLevel >= 1 && console.log(`${blue('debug: ')}${colorObj(txt)}${colorObj(msg)}`),
 };
 /* eslint-enable no-console */
