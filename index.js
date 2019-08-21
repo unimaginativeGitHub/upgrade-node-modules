@@ -59,7 +59,19 @@ let fixedModules = { dependencies: {}, devDependencies: {} };
 const currentPackage = JSON.parse(fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8'));
 const fixedModulePath = path.join(parentDir, 'fixedModules.json');
 if (fs.existsSync(fixedModulePath)) {
-  fixedModules = JSON.parse(fs.readFileSync(fixedModulePath, 'utf8'));
+  const {
+    dependencies: rawDependencies,
+    devDependencies: rawDevDependencies,
+  } = JSON.parse(fs.readFileSync(fixedModulePath, 'utf8'));
+  delete rawDependencies.unmComment;
+  delete rawDevDependencies.unmComment;
+  fixedModules = {
+    dependencies: rawDependencies,
+    devDependencies: rawDevDependencies,
+  };
+  if (verbose && !silent) {
+    logger.warn('Fixed Modules:', fixedModules);
+  }
 }
 
 const getAuditResults = async (when) => {
