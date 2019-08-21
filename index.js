@@ -36,7 +36,12 @@ const runAudit = runAuditFlag || fixAudit;
 // If the save to file flag is on, we've got to generate a report
 const report = reportFlag || saveReportToFile || runAuditFlag;
 
-if (verbose && !silent) {
+if (silent) {
+  logger.setLogLevel('off');
+}
+
+
+if (verbose) {
   logger.debug(`Settings
        • verbose:                  ${verbose ? 'yes' : 'nope'}
        • overwrite:                ${overwrite ? 'yes' : 'nope'}
@@ -98,17 +103,17 @@ const getLatest = async (dependencies) => {
     try {
       response = await asyncExec(`npm view ${dependencyName} version`);
     } catch (err) {
-      if (verbose && !silent) {
+      if (verbose) {
         logger.debug(`Unable to find version for package: ${dependencyName}`);
       }
     }
     if (response && response.stdout && response.stdout.length) {
-      if (verbose && !silent) {
+      if (verbose) {
         logger.debug(`Setting package to latest stable version: { ${dependencyName}: "${response.stdout.replace('\n', '')}" }`);
       }
       newDependencies[dependencyName] = response.stdout.replace('\n', '');
     } else {
-      if (verbose && !silent) {
+      if (verbose) {
         logger.debug(`Setting to existing package version:
        { ${dependencyName}: "${dependencies[dependencyName]}" }`);
       }
@@ -128,9 +133,7 @@ const saveReport = (html) => {
 };
 
 const upgradePackage = async () => {
-  if (!silent) {
-    logger.info('Retrieving Primary and Dev Dependencies...');
-  }
+  logger.info('Retrieving Primary and Dev Dependencies...');
 
   let latestDevDeps = {};
   let latestDeps = {};
@@ -160,28 +163,22 @@ const upgradePackage = async () => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to:\n      ${newPackagePath}`, err);
     } else {
-      if (!silent) {
-        logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
-      }
+      logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
 
       let auditAfter = '{}';
       let fixReport = '';
 
       if (overwrite) {
-        if (!silent) {
-          logger.info('installing new modules');
-        }
+        logger.info('installing new modules');
         if (upgrade) {
           await asyncExec('npm install');
         }
 
         if (runAudit) {
           if (fixAudit) {
-            if (!silent) {
-              logger.info('checking module security');
-            }
+            logger.info('checking module security');
             fixReport = (await asyncExec('npm audit fix')).stdout;
-            if (verbose && !silent) {
+            if (verbose) {
               logger.info('audit fix result:', fixReport);
             }
           }
