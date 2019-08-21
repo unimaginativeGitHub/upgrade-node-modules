@@ -4,27 +4,8 @@ Simple script to parse your package.json and upgrade each package version to lat
 ---
 
 ## New Features!
-• Upgrade (`-u`)
-• Audit (`-a`)
-• Fix audit vulnerabilities (`-x`)
+• fixedModules.json now supports adding comments to the JSON file. Comments are allowed in `dependencies` and `devDependencies` using the `unmComment` key.
 
-### Upgrade
-Automatically upgrades your node modules after running the dependency review.
-Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
-
-### Security Audit
-Runs `npm audit` under the hood and will provide a before and after report when writing to file or console.
-Note: selecting audit will automatically produce a report (console if `-f` is not selected)
-
-### Fix Audit
-Runs `npm audit` before and after upgrade and also runs `npm audit --fix`. If you have report output selected, a before and after audit report will be added. Additionally, if vulnerabilities were reported, a brief security progress report will be included in the report.
-Note: selecting fix audit will automatically overwrite your package.json, essentially adding `-w` to the fix audit call.
-
-### Taking Advantage of the new features:
-> Upgrade node modules, run audits, fix vulnerabilities and save an html report
-```
-npm upgrade-node-modules -uxf
-```
 
 
 ---
@@ -55,10 +36,12 @@ The `upgrade-node-modules` script has the option of locking down any number of *
 ```json
 {
   "dependencies": {
+    "unmComment": "some comment here - these are  filtered out on fixedModule load",
     "commander": "2.14.0",
     "chalk": "1.9.3"
   },
   "devDependencies": {
+    "unmComment": "some other comment here",
     "mocha": "5.0.1"
   }
 }
@@ -99,6 +82,18 @@ Write the report to file (html). Super handy for uploading or emailing via autom
 ```
 upgrade-node-modules -f
 ```
+
+### Upgrade
+Automatically upgrades your node modules after running the dependency review.
+Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
+
+### Security Audit
+Runs `npm audit` under the hood and will provide a before and after report when writing to file or console.
+Note: selecting audit will automatically produce a report (console if `-f` is not selected)
+
+### Fix Audit
+Runs `npm audit` before and after upgrade and also runs `npm audit --fix`. If you have report output selected, a before and after audit report will be added. Additionally, if vulnerabilities were reported, a brief security progress report will be included in the report.
+Note: selecting fix audit will automatically overwrite your package.json, essentially adding `-w` to the fix audit call.
 
 ---
 
