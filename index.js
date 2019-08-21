@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const stableStringify = require('json-stable-stringify');
 const program = require('commander');
+const JSON5 = require('json5');
 const path = require('path');
 const fs = require('fs');
 
@@ -57,21 +58,12 @@ const parentDir = process.cwd(); // gets the directory where command was execute
 let fixedModules = { dependencies: {}, devDependencies: {} };
 
 const currentPackage = JSON.parse(fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8'));
-const fixedModulePath = path.join(parentDir, 'fixedModules.json');
-if (fs.existsSync(fixedModulePath)) {
-  const {
-    dependencies: rawDependencies,
-    devDependencies: rawDevDependencies,
-  } = JSON.parse(fs.readFileSync(fixedModulePath, 'utf8'));
-  delete rawDependencies.unmComment;
-  delete rawDevDependencies.unmComment;
-  fixedModules = {
-    dependencies: rawDependencies,
-    devDependencies: rawDevDependencies,
-  };
-  if (verbose && !silent) {
-    logger.warn('Fixed Modules:', fixedModules);
-  }
+const fixedModulePath = path.join(parentDir, 'fixedModules');
+if (fs.existsSync(`${fixedModulePath}.json`) || fs.existsSync(`${fixedModulePath}.json5`)) {
+  const isJSON5 = !!fs.existsSync(`${fixedModulePath}.json5`);
+  fixedModules = isJSON5
+    ? JSON5.parse(fs.readFileSync(`${fixedModulePath}.json5`, 'utf8'))
+    : JSON.parse(fs.readFileSync(`${fixedModulePath}.json`, 'utf8'));
 }
 
 const getAuditResults = async (when) => {

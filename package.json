@@ -10,9 +10,10 @@
     "chalk": "2.4.2",
     "commander": "3.0.0",
     "json-colorizer": "2.2.1",
-    "json-stable-stringify": "1.0.1"
+    "json-stable-stringify": "1.0.1",
+    "json5": "2.1.0"
   },
-  "description": "Lock down you module versions and upgrade to the latest stable versions when you want to",
+  "description": "Lock down your module versions and upgrade to the latest stable versions when you want to",
   "devDependencies": {
     "eslint": "6.2.1",
     "eslint-config-airbnb": "18.0.1",
@@ -35,5 +36,5 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint ."
   },
-  "version": "1.2.2"
+  "version": "1.2.3"
 }
