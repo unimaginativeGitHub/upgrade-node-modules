@@ -4,7 +4,9 @@ Simple script to parse your package.json and upgrade each package version to lat
 ---
 
 ## New Features!
-• fixedModules.json now supports adding comments to the JSON file. Comments are allowed in `dependencies` and `devDependencies` using the `unmComment` key.
+• fixedModules now supports both .json and .json5 spec!
+
+Check out the [JSON5 Project Page](https://json5.org) for more details.
 
 
 
@@ -32,20 +34,22 @@ By default, the script will walk your package.json and query npm for the latest 
 
 The `upgrade-node-modules` script has the option of locking down any number of **dependencies** or **devDependencies**. All you need to do is add a file to your project's root directory name `fixedModules.json`. List dependencies and devDependencies in the same way you would in `package.json`
 
-**Example:**
-```json
+**Example (json5):**
+```json5
 {
   "dependencies": {
-    "unmComment": "some comment here - these are  filtered out on fixedModule load",
+    // some comment here - these are filtered out on fixedModule load and JSON5 parsing
     "commander": "2.14.0",
     "chalk": "1.9.3"
   },
   "devDependencies": {
-    "unmComment": "some other comment here",
+    // some other comment here"
     "mocha": "5.0.1"
   }
 }
 ```
+
+Standard json parsing is still fully supported.
 
 ### Help
 Display help.
