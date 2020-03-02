@@ -99,7 +99,7 @@ const getLatest = async (dependencies, fixedDependencies) => {
   await Promise.all(Object.keys(dependencies).map(async (dependencyName) => {
     let response = null;
     if (fixedDependencies[dependencyName] === '*') {
-      console.log('\nshit shit shit\nabort abort abort!!!\n');
+      logger.debug(`Updating of ${dependencyName} is set to skip.`);
       newDependencies[dependencyName] = dependencies[dependencyName];
       return;
     }
@@ -153,8 +153,6 @@ const upgradePackage = async () => {
 
   const newFixedDevDeps = filterIgnoredModules(fixedModules.devDependencies);
   const newFixedDeps = filterIgnoredModules(fixedModules.dependencies);
-
-  console.log((newFixedDeps), newFixedDeps)
 
   const devDependencies = { ...latestDevDeps, ...newFixedDevDeps };
   const dependencies = { ...latestDeps, ...newFixedDeps };
