@@ -1,4 +1,4 @@
-const html = contents => `
+const html = (contents) => `
 <!DOCTYPE html>
 <html>
   ${contents}
@@ -22,7 +22,7 @@ const head = () => (`
     </style>
   </head>`);
 
-const body = contents => `
+const body = (contents) => `
   <body>
     <font face='menlo'>
       ${contents}
@@ -34,16 +34,16 @@ const body = contents => `
 const color = (contents, colorCode) => `<span style="color:${colorCode}">${contents}</span>`;
 
 // Wraps the supplied contents in a span with underline text decoration
-const under = contents => `<span style="text-decoration: underline">${contents}</span>`;
+const under = (contents) => `<span style="text-decoration: underline">${contents}</span>`;
 
 // Table utility methods
-const table = contents => `
+const table = (contents) => `
       <table>
         ${contents}
       </table>`;
-const row = contents => `<tr>${contents}</tr>`;
-const header = contents => `<th>${under(contents)}</th>`;
-const entry = contents => `<td>${contents}</td>`;
+const row = (contents) => `<tr>${contents}</tr>`;
+const header = (contents) => `<th>${under(contents)}</th>`;
+const entry = (contents) => `<td>${contents}</td>`;
 
 
 const outputHeaderRow = (columnsProps) => {
@@ -59,7 +59,7 @@ const formatEntry = ({ respectFixed, color: setColor }, text, isFixed) => {
   return entry(color(text, colorToApply));
 };
 
-const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
+const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
 const formatAuditHTML = (audit, when) => {
   const colorKey = {

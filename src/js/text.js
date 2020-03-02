@@ -22,7 +22,7 @@ const getColumnWidths = (columns, summary) => {
 };
 
 const extraSpaces = (entry, columnWidth) => ' '.repeat(columnWidth - entry.length);
-const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
+const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
 const formatEntry = ({ respectFixed, color }, entry, isFixed) => {
   switch (respectFixed && isFixed ? 'yellow' : color) {
@@ -38,11 +38,11 @@ const formatAuditText = (audit, when) => {
   const rWidth = 12;
 
   const colorKey = {
-    info: i => blue(i),
-    low: i => green(i),
-    moderate: i => yellow(i),
-    high: i => magenta(i),
-    critical: i => red(i),
+    info: (i) => blue(i),
+    low: (i) => green(i),
+    moderate: (i) => yellow(i),
+    high: (i) => magenta(i),
+    critical: (i) => red(i),
   };
 
   const auditText = [];

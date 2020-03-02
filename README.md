@@ -4,10 +4,14 @@ Simple script to parse your package.json and upgrade each package version to lat
 ---
 
 ## New Features!
-• fixedModules now supports both .json and .json5 spec!
+• You can now `ignore` modules entirely in fixedModules by specifying the module and `"*"` for the version.
 
-Check out the [JSON5 Project Page](https://json5.org) for more details.
-
+ex:
+```
+"dependencies": {
+  "cool-module-name": "*"
+}
+```
 
 
 ---

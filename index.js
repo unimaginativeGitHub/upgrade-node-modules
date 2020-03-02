@@ -66,6 +66,17 @@ if (fs.existsSync(`${fixedModulePath}.json`) || fs.existsSync(`${fixedModulePath
     : JSON.parse(fs.readFileSync(`${fixedModulePath}.json`, 'utf8'));
 }
 
+const filterIgnoredModules = (deps) => {
+  const newDeps = {};
+  Object.keys(deps).forEach((moduleName) => {
+    const value = deps[moduleName];
+    if (value !== '*') {
+      newDeps[moduleName] = value;
+    }
+  });
+  return newDeps;
+};
+
 const getAuditResults = async (when) => {
   let audit = '{}';
   try {
@@ -83,10 +94,15 @@ const getAuditResults = async (when) => {
   return audit;
 };
 
-const getLatest = async (dependencies) => {
+const getLatest = async (dependencies, fixedDependencies) => {
   const newDependencies = {};
   await Promise.all(Object.keys(dependencies).map(async (dependencyName) => {
     let response = null;
+    if (fixedDependencies[dependencyName] === '*') {
+      console.log('\nshit shit shit\nabort abort abort!!!\n');
+      newDependencies[dependencyName] = dependencies[dependencyName];
+      return;
+    }
     try {
       response = await asyncExec(`npm view ${dependencyName} version`);
     } catch (err) {
@@ -131,12 +147,17 @@ const upgradePackage = async () => {
   // retrieve dependencies in parrallel
   await Promise.all(
     [auditBefore = runAudit ? await getAuditResults('before') : '{}'],
-    [latestDevDeps = await getLatest(currentPackage.devDependencies)],
-    [latestDeps = await getLatest(currentPackage.dependencies)],
+    [latestDevDeps = await getLatest(currentPackage.devDependencies, fixedModules.devDependencies)],
+    [latestDeps = await getLatest(currentPackage.dependencies, fixedModules.dependencies)],
   );
 
-  const devDependencies = { ...latestDevDeps, ...fixedModules.devDependencies };
-  const dependencies = { ...latestDeps, ...fixedModules.dependencies };
+  const newFixedDevDeps = filterIgnoredModules(fixedModules.devDependencies);
+  const newFixedDeps = filterIgnoredModules(fixedModules.dependencies);
+
+  console.log((newFixedDeps), newFixedDeps)
+
+  const devDependencies = { ...latestDevDeps, ...newFixedDevDeps };
+  const dependencies = { ...latestDeps, ...newFixedDeps };
 
   // decide wether or not to overwrite the current package or create a package.json.new
   const fileName = `package.json${overwrite ? '' : '.new'}`;
