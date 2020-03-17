@@ -17,7 +17,7 @@ const colorObj = (txt) => {
 
 /* eslint-disable no-console */
 exports.logger = {
-  error: (txt, msg) => console.log(`${red('error: ')}${colorObj(txt)}${colorObj(msg)}`),
+  error: (txt, msg) => console.log(`${red('error: ')}${colorObj(txt)}\n${msg}`),
   info: (txt, msg) => console.log(`${green('info: ')}${colorObj(txt)}${colorObj(msg)}`),
   warn: (txt, msg) => console.log(`${yellow('warn: ')}${colorObj(txt)}${colorObj(msg)}`),
   debug: (txt, msg) => console.log(`${blue('debug: ')}${colorObj(txt)}${colorObj(msg)}`),

@@ -14,7 +14,6 @@ exports.asyncExec = (command, options = { log: false, cwd: process.cwd() }) => {
         newError.stdout = stdout;
         newError.stderr = stderr;
         failed(newError);
-        return;
       }
       done({ stdout, stderr });
     });

@@ -170,6 +170,7 @@ const upgradePackage = async () => {
   fs.writeFile(newPackagePath, newPackage, async (err) => {
     if (err) {
       logger.error(`Problem writing new ${fileName} to:\n      ${newPackagePath}`, err);
+      process.exit(1);
     } else {
       if (!silent) {
         logger.info(`New ${fileName} saved to:\n      ${newPackagePath}\n`);
@@ -183,7 +184,12 @@ const upgradePackage = async () => {
           logger.info('installing new modules');
         }
         if (upgrade) {
-          await asyncExec('npm install');
+          try {
+            await asyncExec('npm install');
+          } catch (error) {
+            logger.error('Failed to install new modules, aborting upgrade.', error);
+            process.exit(1);
+          }
         }
 
         if (runAudit) {
@@ -236,4 +242,5 @@ try {
   upgradePackage();
 } catch (err) {
   logger.error('There was a problem upgrading your node modules:', err);
+  process.exit(1);
 }
