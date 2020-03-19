@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 const stableStringify = require('json-stable-stringify');
+const { logger } = require('lognographer');
 const program = require('commander');
 const JSON5 = require('json5');
 const path = require('path');
 const fs = require('fs');
 
 const { generateReport } = require('./src/js/report');
-const { logger } = require('./src/js/simpleLogger');
 const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
 
@@ -227,16 +227,6 @@ const upgradePackage = async () => {
     }
   });
 };
-
-/*
-  TO DO
-  •  Add the audit to the report text
-  •  Add the upgrade console statements
-  •  Add a method to format html and text audit logs for the current package.json
-  •  Inject `after` audit logs
-  •  In the end - need a `before` and `after` audit log if audit = true
- */
-
 
 try {
   upgradePackage();

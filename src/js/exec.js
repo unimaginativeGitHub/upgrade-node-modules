@@ -1,6 +1,5 @@
 const cp = require('child_process');
-
-const { logger } = require('./simpleLogger');
+const { logger } = require('lognographer');
 
 exports.asyncExec = (command, options = { log: false, cwd: process.cwd() }) => {
   if (options.log) {
