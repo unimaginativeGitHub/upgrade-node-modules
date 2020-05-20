@@ -197,7 +197,12 @@ const upgradePackage = async () => {
             if (!silent) {
               logger.info('checking module security');
             }
-            fixReport = (await asyncExec('npm audit fix')).stdout;
+            try {
+              fixReport = (await asyncExec('npm audit fix')).stdout;
+            } catch (error) {
+              logger.error('Failed to fix node modules, aborting upgrade.', error);
+              process.exit(1);
+            }
             if (verbose && !silent) {
               logger.info('audit fix result:', fixReport);
             }
