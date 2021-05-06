@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { generateReport } = require('./src/js/report');
+const { addReportToSheet } = require('./src/js/sheet');
 const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
 
@@ -20,13 +21,14 @@ program
   .option('-u --upgrade', 'Run npm install after updating the package.json')
   .option('-a --runAudit', 'Generate an audit report')
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
-  .option('-g --saveReportToGoogleSheet', 'Save the report to a Google Sheet')
+  .option('-g --saveReportToGoogleSheet', 'Save the report to a Google Sheet. Must set the following environment variables: GOOGLE_SPREADSHEET_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY')
   .option('-x --fixAudit', 'Run fix audit')
   .parse(process.argv);
 
 const {
   verbose, silent, report: reportFlag, saveReportToFile,
   overwrite: overwriteFlag, upgrade, runAudit: runAuditFlag, fixAudit,
+  saveReportToGoogleSheet,
 } = program;
 
 // We can't upgrade of fixAudit unless overwrite is selected
@@ -56,6 +58,7 @@ if (verbose && !silent) {
  */
 
 const parentDir = process.cwd(); // gets the directory where command was executed
+const reportFilePath = path.join(parentDir, 'updatedModules.html');
 let fixedModules = { dependencies: {}, devDependencies: {} };
 
 const currentPackage = JSON.parse(fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8'));
@@ -132,8 +135,7 @@ const printReport = (text) => {
 };
 
 const saveReport = (html) => {
-  const filePath = path.join(parentDir, 'updatedModules.html');
-  fs.writeFileSync(filePath, html);
+  fs.writeFileSync(reportFilePath, html);
 };
 
 const upgradePackage = async () => {
@@ -234,9 +236,26 @@ const upgradePackage = async () => {
   });
 };
 
-try {
-  upgradePackage();
-} catch (err) {
-  logger.error('There was a problem upgrading your node modules:', err);
-  process.exit(1);
+if (saveReportToGoogleSheet) {
+  if (
+    !process.env.GOOGLE_SPREADSHEET_ID
+    || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL
+    || !process.env.GOOGLE_PRIVATE_KEY
+  ) {
+    logger.error('GOOGLE_SPREADSHEET_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL, and GOOGLE_PRIVATE_KEY are required environment variables. Please set them and try again.');
+    process.exit(1);
+  }
+  if (!fs.existsSync(reportFilePath)) {
+    logger.error('You must generate an HTML report before posting the results to Google Sheets. Please run `upgrade-node-modules -f` first, then try again.');
+    process.exit(1);
+  }
+  const htmlReport = fs.readFileSync(reportFilePath);
+  addReportToSheet(htmlReport);
+} else {
+  try {
+    upgradePackage();
+  } catch (err) {
+    logger.error('There was a problem upgrading your node modules:', err);
+    process.exit(1);
+  }
 }
