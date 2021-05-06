@@ -37,8 +37,7 @@ async function addReportToSheet(htmlReport) {
     await doc.useServiceAccountAuth(creds);
     await doc.loadInfo();
 
-    const sheetIndex = process.env.GOOGLE_SHEET_INDEX;
-    const sheet = doc.sheetsByIndex[sheetIndex];
+    const sheet = doc.sheetsByIndex[0]; // always POST to the first sheet.
 
     // parse htmlReport for <table> of updated node_modules
     const newRows = parseHTMLForUpdatedModuleData(htmlReport);
