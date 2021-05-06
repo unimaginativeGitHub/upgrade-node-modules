@@ -20,6 +20,7 @@ program
   .option('-u --upgrade', 'Run npm install after updating the package.json')
   .option('-a --runAudit', 'Generate an audit report')
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
+  .option('-g --saveReportToGoogleSheet', 'Save the report to a Google Sheet')
   .option('-x --fixAudit', 'Run fix audit')
   .parse(process.argv);
 
