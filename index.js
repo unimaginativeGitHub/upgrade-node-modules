@@ -11,7 +11,16 @@ const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
 
 // Parse options and provide helper text
-program
+const {
+  verbose,
+  silent,
+  report: reportFlag,
+  saveReportToFile,
+  overwrite: overwriteFlag,
+  upgrade,
+  runAudit: runAuditFlag,
+  fixAudit,
+} = program
   .version(version)
   .option('-v, --verbose', 'Show debug output')
   .option('-w, --overwrite', 'Overwrite the existing package.json')
@@ -21,12 +30,8 @@ program
   .option('-a --runAudit', 'Generate an audit report')
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
   .option('-x --fixAudit', 'Run fix audit')
-  .parse(process.argv);
-
-const {
-  verbose, silent, report: reportFlag, saveReportToFile,
-  overwrite: overwriteFlag, upgrade, runAudit: runAuditFlag, fixAudit,
-} = program;
+  .parse(process.argv)
+  .opts();
 
 // We can't upgrade of fixAudit unless overwrite is selected
 const overwrite = upgrade || fixAudit || overwriteFlag;

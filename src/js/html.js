@@ -41,9 +41,9 @@ const table = (contents) => `
       <table>
         ${contents}
       </table>`;
-const row = (contents) => `<tr>${contents}</tr>`;
-const header = (contents) => `<th>${under(contents)}</th>`;
-const entry = (contents) => `<td>${contents}</td>`;
+const row = (contents, size = 10) => `<tr style="font-size:${size}px">${contents}</tr>`;
+const header = (contents, size = 10) => `<th style="font-size:${size}px">${under(contents)}</th>`;
+const entry = (contents, size = 10) => `<td style="font-size:${size}px">${contents}</td>`;
 
 
 const outputHeaderRow = (columnsProps) => {
@@ -84,7 +84,7 @@ const formatAuditHTML = (audit, when) => {
   return vulnerabilityRows.length
     ? `<br />${table(`
       ${row('')}
-      ${row(header(when ? `Audit Report: ${when}` : 'Audit Report'))}
+      ${row(header(when ? `Audit Report: ${when}` : 'Audit Report'), 12)}
       ${row(header('Risk') + header('Vulnerabilities'))}
       ${vulnerabilityRows.join('\n')}
     `)}`
@@ -112,11 +112,11 @@ const generateHTML = (summary, date, auditB, auditFixReport, auditA) => {
 
   const summaryRows = summary.length ? tableRows.join('\n') : row(entry('- no new dependencies -'));
   const tableBody = table(`
-        ${row(header(date))}
+        ${row(header(date, 12))}
         ${outputHeaderRow(columnsProps)}
         ${summaryRows}`);
 
-  const fix = auditFixReport.length ? `<br /><b>${under('Securing modules...')}</b><br />${auditFixReport.replace('\n', '<br />')}<br />` : '';
+  const fix = auditFixReport.length ? `<br /><b style="font-size: 10px;">${under('Securing modules...')}</b><br /><span  style="font-size: 10px;">${auditFixReport.replace('\n', '<br />')}</span><br />` : '';
 
   const htmlBody = (auditB.length) || (auditA.length)
     ? `${tableBody}${formatAuditHTML(auditB, 'Before')}${fix}${formatAuditHTML(auditA, 'After&nbsp;')}`
