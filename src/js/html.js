@@ -41,10 +41,9 @@ const table = (contents) => `
       <table>
         ${contents}
       </table>`;
-const row = (contents, size = 10) => `<tr style="font-size:${size}px">${contents}</tr>`;
-const header = (contents, size = 10) => `<th style="font-size:${size}px">${under(contents)}</th>`;
-const entry = (contents, size = 10) => `<td style="font-size:${size}px">${contents}</td>`;
-
+const row = (contents, size = 12) => `<tr style="font-size:${size}px">${contents}</tr>`;
+const header = (contents, size = 12) => `<th style="font-size:${size}px">${under(contents)}</th>`;
+const entry = (contents, size = 12) => `<td style="font-size:${size}px">${contents}</td>`;
 
 const outputHeaderRow = (columnsProps) => {
   let entries = '';
@@ -84,7 +83,7 @@ const formatAuditHTML = (audit, when) => {
   return vulnerabilityRows.length
     ? `<br />${table(`
       ${row('')}
-      ${row(header(when ? `Audit Report: ${when}` : 'Audit Report'), 12)}
+      ${row(header(when ? `Audit Report: ${when}` : 'Audit Report'), 14)}
       ${row(header('Risk') + header('Vulnerabilities'))}
       ${vulnerabilityRows.join('\n')}
     `)}`
@@ -112,11 +111,11 @@ const generateHTML = (summary, date, auditB, auditFixReport, auditA) => {
 
   const summaryRows = summary.length ? tableRows.join('\n') : row(entry('- no new dependencies -'));
   const tableBody = table(`
-        ${row(header(date, 12))}
+        ${row(header(date, 14))}
         ${outputHeaderRow(columnsProps)}
         ${summaryRows}`);
 
-  const fix = auditFixReport.length ? `<br /><b style="font-size: 10px;">${under('Securing modules...')}</b><br /><span  style="font-size: 10px;">${auditFixReport.replace('\n', '<br />')}</span><br />` : '';
+  const fix = auditFixReport.length ? `<br /><b style="font-size: 12px;">${under('Securing modules...')}</b><br /><span  style="font-size: 12px;">${auditFixReport.replace('\n', '<br />')}</span><br />` : '';
 
   const htmlBody = (auditB.length) || (auditA.length)
     ? `${tableBody}${formatAuditHTML(auditB, 'Before')}${fix}${formatAuditHTML(auditA, 'After&nbsp;')}`
