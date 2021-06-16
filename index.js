@@ -12,7 +12,16 @@ const { asyncExec } = require('./src/js/exec');
 const { version } = require('./package.json');
 
 // Parse options and provide helper text
-program
+const {
+  verbose,
+  silent,
+  report: reportFlag,
+  saveReportToFile,
+  overwrite: overwriteFlag,
+  upgrade,
+  runAudit: runAuditFlag,
+  fixAudit,
+} = program
   .version(version)
   .option('-v, --verbose', 'Show debug output')
   .option('-w, --overwrite', 'Overwrite the existing package.json')
@@ -23,7 +32,8 @@ program
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
   .option('-g --saveReportToGoogleSheet', 'Save the report to a Google Sheet. Must set the following environment variables: GOOGLE_SPREADSHEET_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY')
   .option('-x --fixAudit', 'Run fix audit')
-  .parse(process.argv);
+  .parse(process.argv)
+  .opts();
 
 const {
   verbose, silent, report: reportFlag, saveReportToFile,
