@@ -91,6 +91,12 @@ Write the report to file (html). Super handy for uploading or emailing via autom
 upgrade-node-modules -f
 ```
 
+### File (JSON)
+Write the report to file (json).
+```
+upgrade-node-modules -j
+```
+
 ### Upgrade
 Automatically upgrades your node modules after running the dependency review.
 Note: selecting upgrade will automatically overwrite your package.json, essentially adding `-w` to the upgrade call.
