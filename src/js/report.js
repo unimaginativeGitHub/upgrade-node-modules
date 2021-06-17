@@ -1,4 +1,5 @@
 const { generateHTML } = require('./html');
+const { generateJSON } = require('./json');
 const { generateText } = require('./text');
 
 const organizeData = (currentPackage, type, desired, latest) => {
@@ -37,8 +38,9 @@ const generateReport = (
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const dateString = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
   return {
-    txt: generateText(summary, dateString, auditBefore, fixReport, auditAfter),
     html: generateHTML(summary, dateString, auditBefore, fixReport, auditAfter),
+    json: generateJSON(summary, dateString),
+    txt: generateText(summary, dateString, auditBefore, fixReport, auditAfter),
   };
 };
 
