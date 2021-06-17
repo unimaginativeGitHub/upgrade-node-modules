@@ -20,6 +20,7 @@ const {
   upgrade,
   runAudit: runAuditFlag,
   fixAudit,
+  json,
 } = program
   .version(version)
   .option('-v, --verbose', 'Show debug output')
@@ -28,6 +29,7 @@ const {
   .option('-r --report', 'Generate a log of which modules were updated')
   .option('-u --upgrade', 'Run npm install after updating the package.json')
   .option('-a --runAudit', 'Generate an audit report')
+  .option('-j --json', 'Save the report to JSON file: updatedModules.json')
   .option('-f --saveReportToFile', 'Save the report to file: updatedModules.html')
   .option('-x --fixAudit', 'Run fix audit')
   .parse(process.argv)
@@ -40,7 +42,7 @@ const overwrite = upgrade || fixAudit || overwriteFlag;
 const runAudit = runAuditFlag || fixAudit;
 
 // If the save to file flag is on, we've got to generate a report
-const report = reportFlag || saveReportToFile || runAuditFlag;
+const report = reportFlag || saveReportToFile || runAuditFlag || json;
 
 if (verbose && !silent) {
   logger.debug(`Settings
@@ -135,6 +137,11 @@ const printReport = (text) => {
   logger.info(`\n\n${text}`);
 };
 
+const saveJSON = (jsonReport) => {
+  const filePath = path.join(parentDir, 'updatedModules.json');
+  fs.writeFileSync(filePath, JSON.stringify(jsonReport));
+};
+
 const saveReport = (html) => {
   const filePath = path.join(parentDir, 'updatedModules.html');
   fs.writeFileSync(filePath, html);
@@ -216,7 +223,7 @@ const upgradePackage = async () => {
         }
       }
 
-      const { html, txt } = report
+      const { html, json: jsonReport, txt } = report
         ? generateReport(
           currentPackage,
           dependencies,
@@ -228,7 +235,9 @@ const upgradePackage = async () => {
           auditAfter,
         )
         : {};
-
+      if (json) {
+        saveJSON(jsonReport);
+      }
       if (saveReportToFile) {
         saveReport(html);
       } else if (report) {
