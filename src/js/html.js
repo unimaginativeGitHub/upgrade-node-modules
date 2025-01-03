@@ -126,6 +126,4 @@ const generateHTML = (summary, date, auditB, auditFixReport, auditA) => {
   ${body(htmlBody)}`);
 };
 
-module.exports = {
-  generateHTML,
-};
+export default generateHTML;

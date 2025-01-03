@@ -3,6 +3,4 @@ const generateJSON = (summary, date) => ({
   summary,
 });
 
-module.exports = {
-  generateJSON,
-};
+export default generateJSON;

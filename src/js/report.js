@@ -1,6 +1,6 @@
-const { generateHTML } = require('./html');
-const { generateJSON } = require('./json');
-const { generateText } = require('./text');
+import generateHTML from './html.js';
+import generateJSON from './json.js';
+import generateText from './text.js';
 
 const organizeData = (currentPackage, type, desired, latest) => {
   const data = [];
@@ -44,6 +44,4 @@ const generateReport = (
   };
 };
 
-module.exports = {
-  generateReport,
-};
+export default generateReport;

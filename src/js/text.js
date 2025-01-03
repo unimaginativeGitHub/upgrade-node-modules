@@ -1,6 +1,8 @@
+import chalk from 'chalk';
+
 const {
   green, yellow, red, magenta, underline, blue,
-} = require('chalk');
+} = chalk;
 
 const getColumnWidths = (columns, summary) => {
   const dataKeys = Object.keys(columns);
@@ -108,6 +110,4 @@ const generateText = (summary, date, auditB, auditFixReport, auditA) => {
   return reportText;
 };
 
-module.exports = {
-  generateText,
-};
+export default generateText;

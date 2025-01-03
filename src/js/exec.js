@@ -1,7 +1,7 @@
-const cp = require('child_process');
-const { logger } = require('lognographer');
+import cp from 'child_process';
+import logger from 'lognographer';
 
-exports.asyncExec = (command, options = { log: false, cwd: process.cwd() }) => {
+const asyncExec = (command, options = { log: false, cwd: process.cwd() }) => {
   if (options.log) {
     logger.debug(command);
   }
@@ -18,3 +18,5 @@ exports.asyncExec = (command, options = { log: false, cwd: process.cwd() }) => {
     });
   });
 };
+
+export default asyncExec;

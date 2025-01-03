@@ -1,14 +1,17 @@
 #!/usr/bin/env node
-const stableStringify = require('json-stable-stringify');
-const { logger } = require('lognographer');
-const program = require('commander');
-const JSON5 = require('json5');
-const path = require('path');
-const fs = require('fs');
+import stableStringify from 'json-stable-stringify';
+import { logger } from 'lognographer';
+import { program } from 'commander';
+import JSON5 from 'json5';
+import path from 'path';
+import fs from 'fs';
 
-const { generateReport } = require('./src/js/report');
-const { asyncExec } = require('./src/js/exec');
-const { version } = require('./package.json');
+import generateReport from './src/js/report.js';
+import asyncExec from './src/js/exec.js'
+
+import packageJSON from './package.json' with { type: "json" };
+
+const { version } = packageJSON;
 
 // Parse options and provide helper text
 const {

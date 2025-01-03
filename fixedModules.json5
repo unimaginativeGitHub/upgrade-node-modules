@@ -1,0 +1,8 @@
+{
+  dependencies: {},
+  devDependencies: {
+    // Eslint 9 has some breaking changes, not too tricky, but airbnb base does not yet support v9
+    // https://app.clickup.com/t/86dt8njpx
+    // eslint: '8.57.0',
+  }
+}
